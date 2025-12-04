@@ -1,0 +1,2958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventario - Carrera Sistemas Informáticos UEA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+            --accent-color: #4a90e2;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8fafc;
+            --dark-color: #333;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            color: var(--dark-color);
+            line-height: 1.6;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+        }
+
+        .institution-info {
+            flex: 1;
+        }
+
+        .institution-info h1 {
+            font-size: clamp(20px, 2.5vw, 28px);
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .institution-info h2 {
+            font-size: clamp(14px, 1.5vw, 20px);
+            font-weight: normal;
+            opacity: 0.95;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eef2f7;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: clamp(18px, 2vw, 22px);
+        }
+
+        .card h2 i {
+            color: var(--accent-color);
+        }
+
+        /* Form Styles */
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eef2f7;
+        }
+
+        .form-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            font-size: clamp(16px, 1.8vw, 18px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section h3 i {
+            color: var(--accent-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            font-size: clamp(14px, 1.5vw, 15px);
+        }
+
+        .form-group.required label::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #d1d9e6;
+            border-radius: 8px;
+            font-size: clamp(14px, 1.5vw, 16px);
+            transition: all 0.3s;
+            background-color: #fcfdfe;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .form-control-sm {
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+
+        /* Button Styles */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: clamp(14px, 1.5vw, 16px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 150px;
+            flex: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #357ae8;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e08e0b;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-pdf {
+            background-color: #d63031;
+            color: white;
+        }
+
+        .btn-pdf:hover {
+            background-color: #b71c1c;
+        }
+
+        /* Inventory Summary */
+        .inventory-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .summary-item {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-top: 4px solid var(--accent-color);
+            transition: transform 0.3s;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-item h3 {
+            font-size: clamp(24px, 3vw, 32px);
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .summary-item p {
+            color: #666;
+            font-size: clamp(12px, 1.2vw, 14px);
+            font-weight: 500;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 25px;
+            border-radius: 10px;
+            border: 1px solid #eaeaea;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        table thead {
+            background-color: var(--light-color);
+        }
+
+        table th {
+            padding: clamp(12px, 1.5vw, 18px) 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            white-space: nowrap;
+            font-size: clamp(12px, 1.3vw, 14px);
+        }
+
+        table td {
+            padding: clamp(12px, 1.5vw, 16px) 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+            font-size: clamp(12px, 1.3vw, 14px);
+        }
+
+        table tr:hover {
+            background-color: #f9fbfd;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: clamp(11px, 1.2vw, 14px);
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .edit-btn {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .view-btn {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: clamp(11px, 1.2vw, 13px);
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .status-available {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: var(--success-color);
+        }
+
+        .status-low {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: var(--warning-color);
+        }
+
+        .status-out {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: var(--danger-color);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state i {
+            font-size: clamp(50px, 8vw, 70px);
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .empty-state h3 {
+            font-size: clamp(18px, 2.5vw, 22px);
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .empty-state p {
+            font-size: clamp(14px, 1.5vw, 16px);
+        }
+
+        /* Report Options */
+        .report-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .report-option {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s;
+        }
+
+        .report-option:hover {
+            transform: translateX(5px);
+            background-color: #eef5ff;
+        }
+
+        .report-option h3 {
+            font-size: clamp(16px, 1.8vw, 18px);
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-option p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: clamp(12px, 1.3vw, 14px);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e6ef;
+            color: #777;
+            font-size: clamp(13px, 1.4vw, 15px);
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: clamp(20px, 3vw, 40px);
+            border-radius: 15px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f4f8;
+        }
+
+        .modal-header h2 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: clamp(18px, 2.5vw, 24px);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: clamp(24px, 3vw, 28px);
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+
+        .equipment-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-group {
+            margin-bottom: 20px;
+        }
+
+        .detail-group label {
+            font-weight: 600;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 8px;
+            font-size: clamp(14px, 1.5vw, 15px);
+        }
+
+        .detail-group p {
+            background-color: #f8fafc;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #eaeaea;
+            color: #444;
+            font-size: clamp(14px, 1.5vw, 16px);
+        }
+
+        /* Mobile Navigation */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .logo-section {
+                flex-direction: column;
+                text-align: center;
+                min-width: auto;
+            }
+            
+            .logo-container {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .inventory-summary {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .actions-cell {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            table th, table td {
+                padding: 10px 8px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .equipment-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .inventory-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-control {
+                padding: 12px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+            }
+            
+            .summary-item {
+                padding: 15px;
+            }
+            
+            .report-option {
+                padding: 15px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .button-group,
+            .report-options,
+            .search-section,
+            .actions-cell {
+                display: none !important;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            .table-container {
+                overflow: visible;
+            }
+            
+            table {
+                min-width: auto;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles for keyboard navigation */
+        .btn:focus,
+        .form-control:focus,
+        .action-btn:focus {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Custom select styling */
+        .custom-select-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-select-container select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e3c72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 15px;
+            padding-right: 40px;
+        }
+
+        /* Custom radio buttons for RAM and Storage */
+        .option-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 2px solid #d1d9e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            background-color: white;
+            font-size: 14px;
+        }
+
+        .option-label:hover {
+            border-color: var(--accent-color);
+            background-color: #f0f7ff;
+        }
+
+        .option-label.selected {
+            border-color: var(--accent-color);
+            background-color: #e3f2fd;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .option-input {
+            display: none;
+        }
+
+        /* Custom input with add option */
+        .custom-input-container {
+            position: relative;
+        }
+
+        .add-option-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .add-option-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .other-input {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .other-input.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-container">
+                        <img src="flyerdesign_11112022_104650.png">
+                    </div>
+                    <div class="institution-info">
+                        <h1>UNIDAD EDUCATIVA ANTOFAGASTA</h1>
+                        <h2>Carrera de Sistemas Informáticos - Sistema de Inventario</h2>
+                    </div>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menú móvil">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div>
+                <div class="card">
+                    <h2><i class="fas fa-desktop"></i> Registro de Equipos de Computación</h2>
+                    
+                    <form id="equipmentForm">
+                        <input type="hidden" id="equipmentId">
+                        
+                        <!-- SECCIÓN 1: INFORMACIÓN GENERAL DEL EQUIPO -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-info-circle"></i> Información General</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group required">
+                                    <label for="equipmentCode">Código del Equipo</label>
+                                    <input type="text" id="equipmentCode" class="form-control" placeholder="Ej: UEA-SI-001" required>
+                                </div>
+                                
+                                <div class="form-group required">
+                                    <label for="equipmentName">Nombre del Equipo</label>
+                                    <input type="text" id="equipmentName" class="form-control" placeholder="Ej: Computadora de escritorio" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group required">
+                                    <label for="equipmentType">Tipo de Equipo</label>
+                                    <div class="custom-select-container">
+                                        <select id="equipmentType" class="form-control" required>
+                                            <option value="">Seleccione tipo</option>
+                                            <option value="Computadora de escritorio">Computadora de escritorio</option>
+                                            <option value="Laptop">Laptop</option>
+                                            <option value="Kuas/Quipus">Kuas/Quipus</option>
+                                            <option value="Otro">Otro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group required">
+                                    <label for="equipmentBrand">Marca del CPU</label>
+                                    <div class="custom-select-container">
+                                        <select id="equipmentBrand" class="form-control" required>
+                                            <option value="">Seleccione marca</option>
+                                            <option value="Dell">Dell</option>
+                                            <option value="HP">HP</option>
+                                            <option value="Lenovo">Lenovo</option>
+                                            <option value="Acer">Acer</option>
+                                            <option value="Asus">Asus</option>
+                                            <option value="Apple">Apple</option>
+                                            <option value="Microsoft">Microsoft</option>
+                                            <option value="Samsung">Samsung</option>
+                                            <option value="Toshiba">Toshiba</option>
+                                            <option value="Compaq">Compaq</option>
+                                            <option value="Sony">Sony</option>
+                                            <option value="MSI">MSI</option>
+                                            <option value="Gigabyte">Gigabyte</option>
+                                            <option value="Otro">Otra marca</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group required">
+                                    <label for="equipmentStatus">Estado</label>
+                                    <div class="custom-select-container">
+                                        <select id="equipmentStatus" class="form-control" required>
+                                            <option value="">Seleccione estado</option>
+                                            <option value="Operativo">Operativo</option>
+                                            <option value="En reparación">En reparación</option>
+                                            <option value="Dañado">Dañado</option>
+                                            <option value="Obsoleto">Obsoleto</option>
+                                            <option value="En préstamo">En préstamo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- SECCIÓN 2: CARACTERÍSTICAS TÉCNICAS DEL EQUIPO -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-microchip"></i> Características Técnicas</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="processor">Procesador</label>
+                                    <div class="custom-select-container">
+                                        <select id="processor" class="form-control">
+                                            <option value="">Seleccione procesador</option>
+                                            <option value="Intel Core i3">Intel Core i3</option>
+                                            <option value="Intel Core i5">Intel Core i5</option>
+                                            <option value="Intel Core i7">Intel Core i7</option>
+                                            <option value="Intel Core i9">Intel Core i9</option>
+                                            <option value="Intel Xeon">Intel Xeon</option>
+                                            <option value="AMD Ryzen 3">AMD Ryzen 3</option>
+                                            <option value="AMD Ryzen 5">AMD Ryzen 5</option>
+                                            <option value="AMD Ryzen 7">AMD Ryzen 7</option>
+                                            <option value="AMD Ryzen 9">AMD Ryzen 9</option>
+                                            <option value="AMD Athlon">AMD Athlon</option>
+                                            <option value="Intel Pentium">Intel Pentium</option>
+                                            <option value="Intel Celeron">Intel Celeron</option>
+                                            <option value="Apple M1">Apple M1</option>
+                                            <option value="Apple M2">Apple M2</option>
+                                            <option value="Apple M3">Apple M3</option>
+                                            <option value="Otro">Otro procesador</option>
+                                        </select>
+                                    </div>
+                                    <div id="processorOther" class="other-input">
+                                        <input type="text" id="processorCustom" class="form-control form-control-sm" placeholder="Especificar procesador" style="margin-top: 5px;">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ram">Memoria RAM (GB)</label>
+                                    <div class="option-group" id="ramOptions">
+                                        <label class="option-label" for="ram4">
+                                            <input type="radio" id="ram4" name="ram" value="4" class="option-input">
+                                            4 GB
+                                        </label>
+                                        <label class="option-label" for="ram8">
+                                            <input type="radio" id="ram8" name="ram" value="8" class="option-input">
+                                            8 GB
+                                        </label>
+                                        <label class="option-label" for="ram16">
+                                            <input type="radio" id="ram16" name="ram" value="16" class="option-input">
+                                            16 GB
+                                        </label>
+                                        <label class="option-label" for="ram32">
+                                            <input type="radio" id="ram32" name="ram" value="32" class="option-input">
+                                            32 GB
+                                        </label>
+                                        <label class="option-label" for="ram64">
+                                            <input type="radio" id="ram64" name="ram" value="64" class="option-input">
+                                            64 GB
+                                        </label>
+                                        <label class="option-label" for="ram128">
+                                            <input type="radio" id="ram128" name="ram" value="128" class="option-input">
+                                            128 GB
+                                        </label>
+                                    </div>
+                                    <div class="custom-input-container" style="margin-top: 10px;">
+                                        <input type="number" id="ramCustom" class="form-control" placeholder="Otra cantidad de RAM" min="0">
+                                        <button type="button" class="add-option-btn" onclick="addRamOption()">+</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="storage">Almacenamiento (GB)</label>
+                                    <div class="option-group" id="storageOptions">
+                                        <label class="option-label" for="storage128">
+                                            <input type="radio" id="storage128" name="storage" value="128" class="option-input">
+                                            128 GB
+                                        </label>
+                                        <label class="option-label" for="storage256">
+                                            <input type="radio" id="storage256" name="storage" value="256" class="option-input">
+                                            256 GB
+                                        </label>
+                                        <label class="option-label" for="storage500">
+                                            <input type="radio" id="storage500" name="storage" value="500" class="option-input">
+                                            500 GB
+                                        </label>
+                                        <label class="option-label" for="storage1000">
+                                            <input type="radio" id="storage1000" name="storage" value="1000" class="option-input">
+                                            1 TB
+                                        </label>
+                                        <label class="option-label" for="storage2000">
+                                            <input type="radio" id="storage2000" name="storage" value="2000" class="option-input">
+                                            2 TB
+                                        </label>
+                                        <label class="option-label" for="storage4000">
+                                            <input type="radio" id="storage4000" name="storage" value="4000" class="option-input">
+                                            4 TB
+                                        </label>
+                                    </div>
+                                    <div class="custom-input-container" style="margin-top: 10px;">
+                                        <input type="number" id="storageCustom" class="form-control" placeholder="Otro almacenamiento" min="0">
+                                        <button type="button" class="add-option-btn" onclick="addStorageOption()">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="operatingSystem">Sistema Operativo</label>
+                                    <div class="custom-select-container">
+                                        <select id="operatingSystem" class="form-control">
+                                            <option value="">Seleccione sistema operativo</option>
+                                            <option value="Windows 10 Home">Windows 10 Home</option>
+                                            <option value="Windows 10 Pro">Windows 10 Pro</option>
+                                            <option value="Windows 11 Home">Windows 11 Home</option>
+                                            <option value="Windows 11 Pro">Windows 11 Pro</option>
+                                            <option value="Windows Server 2019">Windows Server 2019</option>
+                                            <option value="Windows Server 2022">Windows Server 2022</option>
+                                            <option value="macOS Monterey">macOS Monterey</option>
+                                            <option value="macOS Ventura">macOS Ventura</option>
+                                            <option value="macOS Sonoma">macOS Sonoma</option>
+                                            <option value="Ubuntu 20.04 LTS">Ubuntu 20.04 LTS</option>
+                                            <option value="Ubuntu 22.04 LTS">Ubuntu 22.04 LTS</option>
+                                            <option value="Linux Mint">Linux Mint</option>
+                                            <option value="Fedora">Fedora</option>
+                                            <option value="CentOS">CentOS</option>
+                                            <option value="Debian">Debian</option>
+                                            <option value="Chrome OS">Chrome OS</option>
+                                            <option value="Sin sistema operativo">Sin sistema operativo</option>
+                                            <option value="Otro">Otro sistema</option>
+                                        </select>
+                                    </div>
+                                    <div id="osOther" class="other-input">
+                                        <input type="text" id="osCustom" class="form-control form-control-sm" placeholder="Especificar sistema operativo" style="margin-top: 5px;">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="motherboard">Placa Madre</label>
+                                    <div class="custom-select-container">
+                                        <select id="motherboard" class="form-control">
+                                            <option value="">Seleccione placa madre</option>
+                                            <option value="ASUS">ASUS</option>
+                                            <option value="Gigabyte">Gigabyte</option>
+                                            <option value="MSI">MSI</option>
+                                            <option value="ASRock">ASRock</option>
+                                            <option value="Intel">Intel</option>
+                                            <option value="Biostar">Biostar</option>
+                                            <option value="EVGA">EVGA</option>
+                                            <option value="Dell">Dell (OEM)</option>
+                                            <option value="HP">HP (OEM)</option>
+                                            <option value="Lenovo">Lenovo (OEM)</option>
+                                            <option value="Acer">Acer (OEM)</option>
+                                            <option value="Apple">Apple</option>
+                                            <option value="No especificada">No especificada</option>
+                                            <option value="Otro">Otra marca</option>
+                                        </select>
+                                    </div>
+                                    <div id="motherboardOther" class="other-input">
+                                        <input type="text" id="motherboardCustom" class="form-control form-control-sm" placeholder="Especificar placa madre" style="margin-top: 5px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- SECCIÓN 3: CARACTERÍSTICAS DE PERIFÉRICOS -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-keyboard"></i> Características de Periféricos</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="hasMonitor" name="hasMonitor">
+                                        <label for="hasMonitor">Incluye Monitor</label>
+                                    </div>
+                                    <div id="monitorDetails" style="display: none; margin-top: 10px;">
+                                        <div class="custom-select-container">
+                                            <select id="monitorBrand" class="form-control form-control-sm" style="margin-bottom: 5px;">
+                                                <option value="">Marca del monitor</option>
+                                                <option value="Samsung">Samsung</option>
+                                                <option value="LG">LG</option>
+                                                <option value="Dell">Dell</option>
+                                                <option value="HP">HP</option>
+                                                <option value="Acer">Acer</option>
+                                                <option value="Asus">Asus</option>
+                                                <option value="BenQ">BenQ</option>
+                                                <option value="ViewSonic">ViewSonic</option>
+                                                <option value="Philips">Philips</option>
+                                                <option value="AOC">AOC</option>
+                                                <option value="Otro">Otra marca</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" id="monitorModel" class="form-control form-control-sm" placeholder="Modelo del monitor" style="margin-bottom: 5px;">
+                                        <div class="custom-select-container">
+                                            <select id="monitorSize" class="form-control form-control-sm">
+                                                <option value="">Tamaño del monitor</option>
+                                                <option value="19">19 pulgadas</option>
+                                                <option value="21.5">21.5 pulgadas</option>
+                                                <option value="24">24 pulgadas</option>
+                                                <option value="27">27 pulgadas</option>
+                                                <option value="32">32 pulgadas</option>
+                                                <option value="34">34 pulgadas (Ultrawide)</option>
+                                                <option value="Otro">Otro tamaño</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="hasKeyboard" name="hasKeyboard">
+                                        <label for="hasKeyboard">Incluye Teclado</label>
+                                    </div>
+                                    <div id="keyboardDetails" style="display: none; margin-top: 10px;">
+                                        <div class="custom-select-container">
+                                            <select id="keyboardBrand" class="form-control form-control-sm" style="margin-bottom: 5px;">
+                                                <option value="">Marca del teclado</option>
+                                                <option value="Logitech">Logitech</option>
+                                                <option value="Microsoft">Microsoft</option>
+                                                <option value="HP">HP</option>
+                                                <option value="Dell">Dell</option>
+                                                <option value="Razer">Razer</option>
+                                                <option value="Corsair">Corsair</option>
+                                                <option value="Genius">Genius</option>
+                                                <option value="Redragon">Redragon</option>
+                                                <option value="SteelSeries">SteelSeries</option>
+                                                <option value="Otro">Otra marca</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" id="keyboardModel" class="form-control form-control-sm" placeholder="Modelo del teclado" style="margin-bottom: 5px;">
+                                        <div class="custom-select-container">
+                                            <select id="keyboardType" class="form-control form-control-sm">
+                                                <option value="">Tipo de teclado</option>
+                                                <option value="Membrana">Membrana</option>
+                                                <option value="Mecánico">Mecánico</option>
+                                                <option value="Inalámbrico">Inalámbrico</option>
+                                                <option value="Multimedia">Multimedia</option>
+                                                <option value="Ergonómico">Ergonómico</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="hasMouse" name="hasMouse">
+                                        <label for="hasMouse">Incluye Mouse</label>
+                                    </div>
+                                    <div id="mouseDetails" style="display: none; margin-top: 10px;">
+                                        <div class="custom-select-container">
+                                            <select id="mouseBrand" class="form-control form-control-sm" style="margin-bottom: 5px;">
+                                                <option value="">Marca del mouse</option>
+                                                <option value="Logitech">Logitech</option>
+                                                <option value="Microsoft">Microsoft</option>
+                                                <option value="HP">HP</option>
+                                                <option value="Dell">Dell</option>
+                                                <option value="Razer">Razer</option>
+                                                <option value="Corsair">Corsair</option>
+                                                <option value="Genius">Genius</option>
+                                                <option value="SteelSeries">SteelSeries</option>
+                                                <option value="Redragon">Redragon</option>
+                                                <option value="Acer">Acer</option>
+                                                <option value="Otro">Otra marca</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" id="mouseModel" class="form-control form-control-sm" placeholder="Modelo del mouse" style="margin-bottom: 5px;">
+                                        <div class="custom-select-container">
+                                            <select id="mouseType" class="form-control form-control-sm">
+                                                <option value="">Tipo de mouse</option>
+                                                <option value="Óptico">Óptico</option>
+                                                <option value="Láser">Láser</option>
+                                                <option value="Inalámbrico">Inalámbrico</option>
+                                                <option value="Gaming">Gaming</option>
+                                                <option value="Ergonómico">Ergonómico</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="hasSpeakers" name="hasSpeakers">
+                                        <label for="hasSpeakers">Incluye Parlantes</label>
+                                    </div>
+                                    <div id="speakersDetails" style="display: none; margin-top: 10px;">
+                                        <div class="custom-select-container">
+                                            <select id="speakersBrand" class="form-control form-control-sm" style="margin-bottom: 5px;">
+                                                <option value="">Marca de parlantes</option>
+                                                <option value="Logitech">Logitech</option>
+                                                <option value="Creative">Creative</option>
+                                                <option value="Genius">Genius</option>
+                                                <option value="Edifier">Edifier</option>
+                                                <option value="Bose">Bose</option>
+                                                <option value="JBL">JBL</option>
+                                                <option value="Sony">Sony</option>
+                                                <option value="HP">HP</option>
+                                                <option value="Dell">Dell</option>
+                                                <option value="Otro">Otra marca</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" id="speakersModel" class="form-control form-control-sm" placeholder="Modelo de parlantes" style="margin-bottom: 5px;">
+                                        <div class="custom-select-container">
+                                            <select id="speakersType" class="form-control form-control-sm">
+                                                <option value="">Tipo de parlantes</option>
+                                                <option value="2.0">2.0 (Estéreo)</option>
+                                                <option value="2.1">2.1 (Estéreo + Subwoofer)</option>
+                                                <option value="5.1">5.1 (Surround)</option>
+                                                <option value="USB">USB</option>
+                                                <option value="Bluetooth">Bluetooth</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="hasDVD" name="hasDVD">
+                                        <label for="hasDVD">Incluye Lector DVD</label>
+                                    </div>
+                                    <div id="dvdDetails" style="display: none; margin-top: 10px;">
+                                        <div class="custom-select-container">
+                                            <select id="dvdBrand" class="form-control form-control-sm" style="margin-bottom: 5px;">
+                                                <option value="">Marca del lector DVD</option>
+                                                <option value="LG">LG</option>
+                                                <option value="Samsung">Samsung</option>
+                                                <option value="Sony">Sony</option>
+                                                <option value="Pioneer">Pioneer</option>
+                                                <option value="Asus">Asus</option>
+                                                <option value="HP">HP</option>
+                                                <option value="Dell">Dell</option>
+                                                <option value="Toshiba">Toshiba</option>
+                                                <option value="Panasonic">Panasonic</option>
+                                                <option value="Otro">Otra marca</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" id="dvdModel" class="form-control form-control-sm" placeholder="Modelo del lector DVD" style="margin-bottom: 5px;">
+                                        <div class="custom-select-container">
+                                            <select id="dvdType" class="form-control form-control-sm">
+                                                <option value="">Tipo de lector</option>
+                                                <option value="DVD-ROM">DVD-ROM</option>
+                                                <option value="DVD-RW">DVD-RW</option>
+                                                <option value="DVD+RW">DVD+RW</option>
+                                                <option value="Blu-ray">Blu-ray</option>
+                                                <option value="Combo DVD/CD">Combo DVD/CD</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- SECCIÓN 4: REGISTRO DE INMUEBLES -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-couch"></i> Registro de Inmuebles</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="furnitureCode">Código de Inmueble</label>
+                                    <input type="text" id="furnitureCode" class="form-control" placeholder="Ej: UEA-MESA-001">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="furnitureType">Tipo de Inmueble</label>
+                                    <div class="custom-select-container">
+                                        <select id="furnitureType" class="form-control">
+                                            <option value="">Seleccione tipo</option>
+                                            <option value="Mesa">Mesa</option>
+                                            <option value="Silla">Silla</option>
+                                            <option value="Estante">Estante</option>
+                                            <option value="Escritorio">Escritorio</option>
+                                            <option value="Otro">Otro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="furnitureMaterial">Material</label>
+                                    <div class="custom-select-container">
+                                        <select id="furnitureMaterial" class="form-control">
+                                            <option value="">Seleccione material</option>
+                                            <option value="Madera">Madera</option>
+                                            <option value="Metal">Metal</option>
+                                            <option value="Plástico">Plástico</option>
+                                            <option value="Vidrio">Vidrio</option>
+                                            <option value="Melamina">Melamina</option>
+                                            <option value="MDF">MDF</option>
+                                            <option value="Mixto">Mixto</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="furnitureColor">Color</label>
+                                    <div class="custom-select-container">
+                                        <select id="furnitureColor" class="form-control">
+                                            <option value="">Seleccione color</option>
+                                            <option value="Café">Café</option>
+                                            <option value="Negro">Negro</option>
+                                            <option value="Blanco">Blanco</option>
+                                            <option value="Gris">Gris</option>
+                                            <option value="Beige">Beige</option>
+                                            <option value="Madera natural">Madera natural</option>
+                                            <option value="Rojo">Rojo</option>
+                                            <option value="Azul">Azul</option>
+                                            <option value="Verde">Verde</option>
+                                            <option value="Otro">Otro color</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="furnitureDimensions">Dimensiones (cm)</label>
+                                    <div class="custom-select-container">
+                                        <select id="furnitureDimensions" class="form-control">
+                                            <option value="">Seleccione dimensiones</option>
+                                            <option value="120x60x75">120x60x75 (Mesa estándar)</option>
+                                            <option value="140x70x75">140x70x75 (Mesa grande)</option>
+                                            <option value="100x50x75">100x50x75 (Mesa pequeña)</option>
+                                            <option value="160x80x75">160x80x75 (Escritorio ejecutivo)</option>
+                                            <option value="180x90x75">180x90x75 (Mesa de conferencias)</option>
+                                            <option value="90x90x75">90x90x75 (Mesa cuadrada)</option>
+                                            <option value="200x100x75">200x100x75 (Mesa de reuniones)</option>
+                                            <option value="Otro">Otras dimensiones</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="furnitureCondition">Estado del Inmueble</label>
+                                    <div class="custom-select-container">
+                                        <select id="furnitureCondition" class="form-control">
+                                            <option value="">Seleccione estado</option>
+                                            <option value="Excelente">Excelente</option>
+                                            <option value="Bueno">Bueno</option>
+                                            <option value="Regular">Regular</option>
+                                            <option value="Requiere reparación">Requiere reparación</option>
+                                            <option value="Dañado">Dañado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="furnitureQuantity">Cantidad</label>
+                                    <div class="option-group" id="quantityOptions">
+                                        <label class="option-label" for="quantity1">
+                                            <input type="radio" id="quantity1" name="quantity" value="1" class="option-input" checked>
+                                            1
+                                        </label>
+                                        <label class="option-label" for="quantity2">
+                                            <input type="radio" id="quantity2" name="quantity" value="2" class="option-input">
+                                            2
+                                        </label>
+                                        <label class="option-label" for="quantity3">
+                                            <input type="radio" id="quantity3" name="quantity" value="3" class="option-input">
+                                            3
+                                        </label>
+                                        <label class="option-label" for="quantity4">
+                                            <input type="radio" id="quantity4" name="quantity" value="4" class="option-input">
+                                            4
+                                        </label>
+                                        <label class="option-label" for="quantity5">
+                                            <input type="radio" id="quantity5" name="quantity" value="5" class="option-input">
+                                            5
+                                        </label>
+                                        <label class="option-label" for="quantity6">
+                                            <input type="radio" id="quantity6" name="quantity" value="6" class="option-input">
+                                            6
+                                        </label>
+                                    </div>
+                                    <div class="custom-input-container" style="margin-top: 10px;">
+                                        <input type="number" id="furnitureQuantity" class="form-control" placeholder="Otra cantidad" min="1" value="1">
+                                        <button type="button" class="add-option-btn" onclick="addQuantityOption()">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="furnitureObservations">Observaciones del Inmueble</label>
+                                <textarea id="furnitureObservations" class="form-control" placeholder="Observaciones sobre el estado, reparaciones, ubicación, etc..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- SECCIÓN 5: INFORMACIÓN ADICIONAL -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-sticky-note"></i> Información Adicional</h3>
+                            
+                            <div class="form-group">
+                                <label for="equipmentSpecs">Especificaciones Técnicas Adicionales</label>
+                                <textarea id="equipmentSpecs" class="form-control" placeholder="Detalles adicionales del equipo..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="equipmentNotes">Observaciones / Notas</label>
+                                <textarea id="equipmentNotes" class="form-control" placeholder="Observaciones sobre el estado, reparaciones, etc..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Equipo
+                            </button>
+                            <button type="button" class="btn btn-warning" onclick="clearForm()">
+                                <i class="fas fa-eraser"></i> Limpiar Formulario
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="resetInventory()">
+                                <i class="fas fa-trash-alt"></i> Limpiar Todo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fas fa-clipboard-list"></i> Inventario Registrado</h2>
+                    
+                    <div class="inventory-summary">
+                        <div class="summary-item">
+                            <h3 id="totalEquipment">0</h3>
+                            <p>Equipos Registrados</p>
+                        </div>
+                        <div class="summary-item">
+                            <h3 id="operationalEquipment">0</h3>
+                            <p>Equipos Operativos</p>
+                        </div>
+                        <div class="summary-item">
+                            <h3 id="furnitureCount">0</h3>
+                            <p>Inmuebles Registrados</p>
+                        </div>
+                        <div class="summary-item">
+                            <h3 id="completeKits">0</h3>
+                            <p>Con Periféricos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="inventoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Equipo</th>
+                                    <th>Tipo</th>
+                                    <th>Marca</th>
+                                    <th>Estado</th>
+                                    <th>Inmueble</th>
+                                    <th>Periféricos</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <!-- Los equipos se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="emptyInventory" class="empty-state">
+                        <i class="fas fa-desktop"></i>
+                        <h3>No hay equipos registrados</h3>
+                        <p>Comience agregando equipos utilizando el formulario superior</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h2><i class="fas fa-file-pdf"></i> Generar Reportes PDF</h2>
+                    
+                    <div class="report-options">
+                        <div class="report-option">
+                            <h3><i class="fas fa-file-alt"></i> Reporte Completo</h3>
+                            <p>Genera un reporte detallado con toda la información de todos los equipos registrados.</p>
+                            <button class="btn btn-pdf" onclick="generateFullReport()">
+                                <i class="fas fa-download"></i> Generar PDF Completo
+                            </button>
+                        </div>
+                        
+                        <div class="report-option">
+                            <h3><i class="fas fa-wrench"></i> Reporte por Estado</h3>
+                            <p>Reporte filtrado por estado de los equipos (operativos, en reparación, dañados).</p>
+                            <select id="statusFilter" class="form-control form-control-sm" style="margin-bottom: 10px;">
+                                <option value="Operativo">Equipos Operativos</option>
+                                <option value="En reparación">En Reparación</option>
+                                <option value="Dañado">Equipos Dañados</option>
+                                <option value="Obsoleto">Equipos Obsoletos</option>
+                            </select>
+                            <button class="btn btn-pdf" onclick="generateStatusReport()">
+                                <i class="fas fa-filter"></i> Generar por Estado
+                            </button>
+                        </div>
+                        
+                        <div class="report-option">
+                            <h3><i class="fas fa-couch"></i> Reporte de Inmuebles</h3>
+                            <p>Reporte detallado de todos los inmuebles registrados (mesas, sillas, estantes).</p>
+                            <button class="btn btn-pdf" onclick="generateFurnitureReport()">
+                                <i class="fas fa-couch"></i> Generar de Inmuebles
+                            </button>
+                        </div>
+                        
+                        <div class="report-option">
+                            <h3><i class="fas fa-keyboard"></i> Reporte de Periféricos</h3>
+                            <p>Reporte de equipos con periféricos (monitor, teclado, mouse, parlantes, DVD).</p>
+                            <button class="btn btn-pdf" onclick="generatePeripheralsReport()">
+                                <i class="fas fa-keyboard"></i> Generar Periféricos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card search-section">
+                    <h2><i class="fas fa-search"></i> Buscar Equipo</h2>
+                    
+                    <div class="form-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por código, nombre, marca...">
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="searchEquipment()">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                        <button class="btn btn-warning" onclick="clearSearch()">
+                            <i class="fas fa-times"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Sistema de Inventario de Equipos de Computación</strong></p>
+            <p>Carrera de Sistemas Informáticos - Unidad Educativa Antofagasta</p>
+            <p>© 2025 - Todos los derechos reservados</p>
+        </div>
+    </div>
+    
+    <!-- Modal para ver detalles del equipo -->
+    <div id="equipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-desktop"></i> Detalles del Equipo</h2>
+                <button class="close-modal" onclick="closeModal()" aria-label="Cerrar">&times;</button>
+            </div>
+            <div id="modalEquipmentDetails" class="equipment-details">
+                <!-- Los detalles se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Datos del inventario
+        let inventory = JSON.parse(localStorage.getItem('ueaInventory')) || [];
+        let editingId = null;
+        
+        // Opciones predefinidas para características técnicas
+        const technicalOptions = {
+            processors: [
+                "Intel Core i3", "Intel Core i5", "Intel Core i7", "Intel Core i9",
+                "Intel Xeon", "AMD Ryzen 3", "AMD Ryzen 5", "AMD Ryzen 7", "AMD Ryzen 9",
+                "AMD Athlon", "Intel Pentium", "Intel Celeron", "Apple M1", "Apple M2", "Apple M3"
+            ],
+            ramOptions: [4, 8, 16, 32, 64, 128],
+            storageOptions: [128, 256, 500, 1000, 2000, 4000],
+            operatingSystems: [
+                "Windows 10 Home", "Windows 10 Pro", "Windows 11 Home", "Windows 11 Pro",
+                "Windows Server 2019", "Windows Server 2022", "macOS Monterey", "macOS Ventura",
+                "macOS Sonoma", "Ubuntu 20.04 LTS", "Ubuntu 22.04 LTS", "Linux Mint",
+                "Fedora", "CentOS", "Debian", "Chrome OS"
+            ],
+            motherboards: [
+                "ASUS", "Gigabyte", "MSI", "ASRock", "Intel", "Biostar", "EVGA",
+                "Dell", "HP", "Lenovo", "Acer", "Apple"
+            ]
+        };
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar eventos para mostrar/ocultar detalles de periféricos
+            document.getElementById('hasMonitor').addEventListener('change', function() {
+                document.getElementById('monitorDetails').style.display = this.checked ? 'block' : 'none';
+            });
+            
+            document.getElementById('hasKeyboard').addEventListener('change', function() {
+                document.getElementById('keyboardDetails').style.display = this.checked ? 'block' : 'none';
+            });
+            
+            document.getElementById('hasMouse').addEventListener('change', function() {
+                document.getElementById('mouseDetails').style.display = this.checked ? 'block' : 'none';
+            });
+            
+            document.getElementById('hasSpeakers').addEventListener('change', function() {
+                document.getElementById('speakersDetails').style.display = this.checked ? 'block' : 'none';
+            });
+            
+            document.getElementById('hasDVD').addEventListener('change', function() {
+                document.getElementById('dvdDetails').style.display = this.checked ? 'block' : 'none';
+            });
+            
+            // Configurar eventos para opciones "Otro"
+            document.getElementById('processor').addEventListener('change', function() {
+                document.getElementById('processorOther').style.display = this.value === 'Otro' ? 'block' : 'none';
+            });
+            
+            document.getElementById('operatingSystem').addEventListener('change', function() {
+                document.getElementById('osOther').style.display = this.value === 'Otro' ? 'block' : 'none';
+            });
+            
+            document.getElementById('motherboard').addEventListener('change', function() {
+                document.getElementById('motherboardOther').style.display = this.value === 'Otro' ? 'block' : 'none';
+            });
+            
+            // Configurar eventos para opciones de radio
+            const ramOptions = document.querySelectorAll('input[name="ram"]');
+            ramOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    updateOptionLabels('ramOptions', this.value);
+                    document.getElementById('ramCustom').value = '';
+                });
+            });
+            
+            const storageOptions = document.querySelectorAll('input[name="storage"]');
+            storageOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    updateOptionLabels('storageOptions', this.value);
+                    document.getElementById('storageCustom').value = '';
+                });
+            });
+            
+            const quantityOptions = document.querySelectorAll('input[name="quantity"]');
+            quantityOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    updateOptionLabels('quantityOptions', this.value);
+                    document.getElementById('furnitureQuantity').value = this.value;
+                });
+            });
+            
+            // Configurar evento para cantidad personalizada
+            document.getElementById('furnitureQuantity').addEventListener('input', function() {
+                const value = this.value;
+                const radio = document.querySelector(`input[name="quantity"][value="${value}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    updateOptionLabels('quantityOptions', value);
+                } else {
+                    // Desmarcar todas las opciones si es un valor personalizado
+                    quantityOptions.forEach(opt => opt.checked = false);
+                    updateOptionLabels('quantityOptions', '');
+                }
+            });
+            
+            // Cargar inventario
+            loadInventory();
+            
+            // Configurar el formulario
+            document.getElementById('equipmentForm').addEventListener('submit', saveEquipment);
+            
+            // Configurar búsqueda por tecla Enter
+            document.getElementById('searchInput').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    searchEquipment();
+                }
+            });
+            
+            // Configurar menú móvil
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                const sidebar = document.querySelector('.main-content > div:last-child');
+                sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            // Detectar cambios en el tamaño de la pantalla
+            window.addEventListener('resize', handleResize);
+            handleResize();
+        });
+
+        // Actualizar etiquetas de opciones seleccionadas
+        function updateOptionLabels(containerId, selectedValue) {
+            const container = document.getElementById(containerId);
+            const labels = container.querySelectorAll('.option-label');
+            
+            labels.forEach(label => {
+                const input = label.querySelector('.option-input');
+                if (input.value === selectedValue) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
+            });
+        }
+
+        // Agregar opción personalizada de RAM
+        function addRamOption() {
+            const customValue = document.getElementById('ramCustom').value;
+            if (!customValue || isNaN(customValue) || customValue <= 0) {
+                showToast('Ingrese una cantidad válida de RAM', 'error');
+                return;
+            }
+            
+            // Crear nueva opción
+            const container = document.getElementById('ramOptions');
+            const optionId = `ramCustom${customValue}`;
+            
+            // Verificar si ya existe
+            if (document.getElementById(optionId)) {
+                showToast('Esta opción de RAM ya existe', 'info');
+                return;
+            }
+            
+            const label = document.createElement('label');
+            label.className = 'option-label';
+            label.htmlFor = optionId;
+            
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.id = optionId;
+            input.name = 'ram';
+            input.value = customValue;
+            input.className = 'option-input';
+            
+            input.addEventListener('change', function() {
+                updateOptionLabels('ramOptions', this.value);
+                document.getElementById('ramCustom').value = '';
+            });
+            
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(`${customValue} GB`));
+            
+            container.appendChild(label);
+            input.checked = true;
+            updateOptionLabels('ramOptions', customValue);
+            document.getElementById('ramCustom').value = '';
+            
+            showToast(`Opción de ${customValue} GB RAM agregada`, 'success');
+        }
+
+        // Agregar opción personalizada de almacenamiento
+        function addStorageOption() {
+            const customValue = document.getElementById('storageCustom').value;
+            if (!customValue || isNaN(customValue) || customValue <= 0) {
+                showToast('Ingrese una cantidad válida de almacenamiento', 'error');
+                return;
+            }
+            
+            // Crear nueva opción
+            const container = document.getElementById('storageOptions');
+            const optionId = `storageCustom${customValue}`;
+            
+            // Verificar si ya existe
+            if (document.getElementById(optionId)) {
+                showToast('Esta opción de almacenamiento ya existe', 'info');
+                return;
+            }
+            
+            const label = document.createElement('label');
+            label.className = 'option-label';
+            label.htmlFor = optionId;
+            
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.id = optionId;
+            input.name = 'storage';
+            input.value = customValue;
+            input.className = 'option-input';
+            
+            input.addEventListener('change', function() {
+                updateOptionLabels('storageOptions', this.value);
+                document.getElementById('storageCustom').value = '';
+            });
+            
+            label.appendChild(input);
+            const displayValue = customValue >= 1000 ? `${customValue/1000} TB` : `${customValue} GB`;
+            label.appendChild(document.createTextNode(displayValue));
+            
+            container.appendChild(label);
+            input.checked = true;
+            updateOptionLabels('storageOptions', customValue);
+            document.getElementById('storageCustom').value = '';
+            
+            showToast(`Opción de ${displayValue} almacenamiento agregada`, 'success');
+        }
+
+        // Agregar opción personalizada de cantidad
+        function addQuantityOption() {
+            const customValue = document.getElementById('furnitureQuantity').value;
+            if (!customValue || isNaN(customValue) || customValue <= 0) {
+                showToast('Ingrese una cantidad válida', 'error');
+                return;
+            }
+            
+            // Crear nueva opción
+            const container = document.getElementById('quantityOptions');
+            const optionId = `quantityCustom${customValue}`;
+            
+            // Verificar si ya existe
+            if (document.getElementById(optionId)) {
+                showToast('Esta opción de cantidad ya existe', 'info');
+                return;
+            }
+            
+            const label = document.createElement('label');
+            label.className = 'option-label';
+            label.htmlFor = optionId;
+            
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.id = optionId;
+            input.name = 'quantity';
+            input.value = customValue;
+            input.className = 'option-input';
+            
+            input.addEventListener('change', function() {
+                updateOptionLabels('quantityOptions', this.value);
+                document.getElementById('furnitureQuantity').value = this.value;
+            });
+            
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(customValue));
+            
+            container.appendChild(label);
+            input.checked = true;
+            updateOptionLabels('quantityOptions', customValue);
+            
+            showToast(`Opción de cantidad ${customValue} agregada`, 'success');
+        }
+
+        // Manejar redimensionamiento de ventana
+        function handleResize() {
+            const sidebar = document.querySelector('.main-content > div:last-child');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            
+            if (window.innerWidth <= 768) {
+                mobileMenuBtn.style.display = 'block';
+                sidebar.style.display = 'none';
+            } else {
+                mobileMenuBtn.style.display = 'none';
+                sidebar.style.display = 'block';
+            }
+        }
+
+        // Mostrar notificación toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Guardar equipo en el inventario
+        function saveEquipment(e) {
+            e.preventDefault();
+            
+            // Obtener valores del formulario - Información General
+            const equipmentId = document.getElementById('equipmentId').value;
+            const equipmentCode = document.getElementById('equipmentCode').value.trim();
+            const equipmentName = document.getElementById('equipmentName').value.trim();
+            const equipmentType = document.getElementById('equipmentType').value;
+            const equipmentBrand = document.getElementById('equipmentBrand').value;
+            const equipmentStatus = document.getElementById('equipmentStatus').value;
+            
+            // Características Técnicas
+            let processor = document.getElementById('processor').value;
+            if (processor === 'Otro') {
+                processor = document.getElementById('processorCustom').value.trim() || 'Otro procesador';
+            }
+            
+            let ram = 0;
+            const ramSelected = document.querySelector('input[name="ram"]:checked');
+            if (ramSelected) {
+                ram = parseInt(ramSelected.value);
+            } else {
+                ram = parseInt(document.getElementById('ramCustom').value) || 0;
+            }
+            
+            let storage = 0;
+            const storageSelected = document.querySelector('input[name="storage"]:checked');
+            if (storageSelected) {
+                storage = parseInt(storageSelected.value);
+            } else {
+                storage = parseInt(document.getElementById('storageCustom').value) || 0;
+            }
+            
+            let operatingSystem = document.getElementById('operatingSystem').value;
+            if (operatingSystem === 'Otro') {
+                operatingSystem = document.getElementById('osCustom').value.trim() || 'Otro sistema';
+            }
+            
+            let motherboard = document.getElementById('motherboard').value;
+            if (motherboard === 'Otro') {
+                motherboard = document.getElementById('motherboardCustom').value.trim() || 'Otra marca';
+            }
+            
+            // Información de Periféricos
+            const hasMonitor = document.getElementById('hasMonitor').checked;
+            const monitorBrand = document.getElementById('monitorBrand').value;
+            const monitorModel = document.getElementById('monitorModel').value.trim();
+            const monitorSize = document.getElementById('monitorSize').value;
+            
+            const hasKeyboard = document.getElementById('hasKeyboard').checked;
+            const keyboardBrand = document.getElementById('keyboardBrand').value;
+            const keyboardModel = document.getElementById('keyboardModel').value.trim();
+            const keyboardType = document.getElementById('keyboardType').value;
+            
+            const hasMouse = document.getElementById('hasMouse').checked;
+            const mouseBrand = document.getElementById('mouseBrand').value;
+            const mouseModel = document.getElementById('mouseModel').value.trim();
+            const mouseType = document.getElementById('mouseType').value;
+            
+            const hasSpeakers = document.getElementById('hasSpeakers').checked;
+            const speakersBrand = document.getElementById('speakersBrand') ? document.getElementById('speakersBrand').value : '';
+            const speakersModel = document.getElementById('speakersModel') ? document.getElementById('speakersModel').value.trim() : '';
+            const speakersType = document.getElementById('speakersType') ? document.getElementById('speakersType').value : '';
+            
+            const hasDVD = document.getElementById('hasDVD').checked;
+            const dvdBrand = document.getElementById('dvdBrand') ? document.getElementById('dvdBrand').value : '';
+            const dvdModel = document.getElementById('dvdModel') ? document.getElementById('dvdModel').value.trim() : '';
+            const dvdType = document.getElementById('dvdType') ? document.getElementById('dvdType').value : '';
+            
+            // Información de Inmuebles
+            const furnitureCode = document.getElementById('furnitureCode').value.trim();
+            const furnitureType = document.getElementById('furnitureType').value;
+            const furnitureMaterial = document.getElementById('furnitureMaterial').value;
+            const furnitureColor = document.getElementById('furnitureColor').value;
+            const furnitureDimensions = document.getElementById('furnitureDimensions').value;
+            
+            let furnitureQuantity = 1;
+            const quantitySelected = document.querySelector('input[name="quantity"]:checked');
+            if (quantitySelected) {
+                furnitureQuantity = parseInt(quantitySelected.value);
+            } else {
+                furnitureQuantity = parseInt(document.getElementById('furnitureQuantity').value) || 1;
+            }
+            
+            const furnitureCondition = document.getElementById('furnitureCondition').value;
+            const furnitureObservations = document.getElementById('furnitureObservations').value.trim();
+            
+            // Información Adicional
+            const equipmentSpecs = document.getElementById('equipmentSpecs').value.trim();
+            const equipmentNotes = document.getElementById('equipmentNotes').value.trim();
+            
+            // Validar campos obligatorios
+            if (!equipmentCode || !equipmentName || !equipmentType || !equipmentBrand || !equipmentStatus) {
+                showToast('Por favor, complete todos los campos obligatorios (*)', 'error');
+                return;
+            }
+            
+            // Verificar si el código ya existe (excepto cuando se está editando)
+            if (!equipmentId) {
+                const existingCode = inventory.find(item => item.code === equipmentCode);
+                if (existingCode) {
+                    showToast(`El código ${equipmentCode} ya está registrado. Por favor, use un código único.`, 'error');
+                    return;
+                }
+            }
+            
+            // Determinar si tiene periféricos
+            const hasPeripherals = hasMonitor || hasKeyboard || hasMouse || hasSpeakers || hasDVD;
+            
+            // Determinar si tiene inmueble registrado
+            const hasFurniture = furnitureCode || furnitureType;
+            
+            // Crear objeto del equipo
+            const equipment = {
+                id: equipmentId || Date.now().toString(),
+                code: equipmentCode,
+                name: equipmentName,
+                type: equipmentType,
+                brand: equipmentBrand,
+                status: equipmentStatus,
+                
+                // Características técnicas
+                processor: processor,
+                ram: ram,
+                storage: storage,
+                operatingSystem: operatingSystem,
+                motherboard: motherboard,
+                
+                // Información de periféricos
+                hasMonitor: hasMonitor,
+                monitorBrand: monitorBrand,
+                monitorModel: monitorModel,
+                monitorSize: monitorSize,
+                
+                hasKeyboard: hasKeyboard,
+                keyboardBrand: keyboardBrand,
+                keyboardModel: keyboardModel,
+                keyboardType: keyboardType,
+                
+                hasMouse: hasMouse,
+                mouseBrand: mouseBrand,
+                mouseModel: mouseModel,
+                mouseType: mouseType,
+                
+                hasSpeakers: hasSpeakers,
+                speakersBrand: speakersBrand,
+                speakersModel: speakersModel,
+                speakersType: speakersType,
+                
+                hasDVD: hasDVD,
+                dvdBrand: dvdBrand,
+                dvdModel: dvdModel,
+                dvdType: dvdType,
+                
+                hasPeripherals: hasPeripherals,
+                
+                // Información de inmuebles
+                furnitureCode: furnitureCode,
+                furnitureType: furnitureType,
+                furnitureMaterial: furnitureMaterial,
+                furnitureColor: furnitureColor,
+                furnitureDimensions: furnitureDimensions,
+                furnitureCondition: furnitureCondition,
+                furnitureQuantity: furnitureQuantity,
+                furnitureObservations: furnitureObservations,
+                hasFurniture: hasFurniture,
+                
+                // Información adicional
+                specs: equipmentSpecs,
+                notes: equipmentNotes,
+                registrationDate: new Date().toISOString()
+            };
+            
+            if (equipmentId) {
+                // Actualizar equipo existente
+                const index = inventory.findIndex(item => item.id === equipmentId);
+                if (index !== -1) {
+                    inventory[index] = equipment;
+                }
+            } else {
+                // Agregar nuevo equipo
+                inventory.push(equipment);
+            }
+            
+            // Guardar en localStorage
+            localStorage.setItem('ueaInventory', JSON.stringify(inventory));
+            
+            // Recargar inventario
+            loadInventory();
+            
+            // Limpiar formulario
+            clearForm();
+            
+            showToast('Equipo guardado correctamente en el inventario.', 'success');
+        }
+
+        // Cargar inventario en la tabla
+        function loadInventory() {
+            const tableBody = document.getElementById('inventoryTableBody');
+            const emptyState = document.getElementById('emptyInventory');
+            
+            if (inventory.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                updateSummary();
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            // Ordenar por código
+            inventory.sort((a, b) => a.code.localeCompare(b.code));
+            
+            // Generar filas de la tabla
+            tableBody.innerHTML = '';
+            inventory.forEach(equipment => {
+                const statusClass = getStatusClass(equipment.status);
+                const statusText = equipment.status;
+                
+                // Determinar estado de inmuebles
+                let furnitureStatus = 'Sin inmueble';
+                if (equipment.hasFurniture && equipment.furnitureType) {
+                    furnitureStatus = `${equipment.furnitureType}`;
+                    if (equipment.furnitureCode) {
+                        furnitureStatus += ` (${equipment.furnitureCode})`;
+                    }
+                }
+                
+                // Determinar estado de periféricos
+                let peripheralsStatus = 'Sin periféricos';
+                if (equipment.hasPeripherals) {
+                    let count = 0;
+                    if (equipment.hasMonitor) count++;
+                    if (equipment.hasKeyboard) count++;
+                    if (equipment.hasMouse) count++;
+                    if (equipment.hasSpeakers) count++;
+                    if (equipment.hasDVD) count++;
+                    peripheralsStatus = `${count} periféricos`;
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${equipment.code}</strong></td>
+                    <td>${equipment.name}</td>
+                    <td>${equipment.type}</td>
+                    <td>${equipment.brand}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${furnitureStatus}</td>
+                    <td>${peripheralsStatus}</td>
+                    <td class="actions-cell">
+                        <button class="action-btn view-btn" onclick="viewEquipmentDetails('${equipment.id}')" aria-label="Ver detalles">
+                            <i class="fas fa-eye"></i> <span class="action-text">Ver</span>
+                        </button>
+                        <button class="action-btn edit-btn" onclick="editEquipment('${equipment.id}')" aria-label="Editar equipo">
+                            <i class="fas fa-edit"></i> <span class="action-text">Editar</span>
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteEquipment('${equipment.id}')" aria-label="Eliminar equipo">
+                            <i class="fas fa-trash"></i> <span class="action-text">Eliminar</span>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            updateSummary();
+        }
+
+        // Actualizar resumen
+        function updateSummary() {
+            // Total de equipos
+            document.getElementById('totalEquipment').textContent = inventory.length;
+            
+            // Equipos operativos
+            const operational = inventory.filter(item => item.status === 'Operativo').length;
+            document.getElementById('operationalEquipment').textContent = operational;
+            
+            // Total de inmuebles registrados
+            const furnitureCount = inventory.filter(item => item.hasFurniture).length;
+            document.getElementById('furnitureCount').textContent = furnitureCount;
+            
+            // Equipos con periféricos
+            const withPeripherals = inventory.filter(item => item.hasPeripherals === true).length;
+            document.getElementById('completeKits').textContent = withPeripherals;
+        }
+
+        // Obtener clase CSS para el estado
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Operativo': return 'status-available';
+                case 'En reparación': return 'status-low';
+                case 'Dañado': return 'status-out';
+                case 'Obsoleto': return 'status-out';
+                default: return 'status-low';
+            }
+        }
+
+        // Ver detalles del equipo
+        function viewEquipmentDetails(id) {
+            const equipment = inventory.find(item => item.id === id);
+            if (!equipment) return;
+            
+            const modalDetails = document.getElementById('modalEquipmentDetails');
+            
+            // Formatear RAM y almacenamiento
+            const ramDisplay = equipment.ram ? `${equipment.ram} GB` : 'No especificado';
+            const storageDisplay = equipment.storage ? 
+                (equipment.storage >= 1000 ? `${equipment.storage/1000} TB` : `${equipment.storage} GB`) : 
+                'No especificado';
+            
+            // Detalles de periféricos
+            let peripheralsHTML = '';
+            
+            if (equipment.hasPeripherals) {
+                peripheralsHTML = `<div style="grid-column: 1 / -1;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">Periféricos Incluidos</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">`;
+                
+                if (equipment.hasMonitor) {
+                    peripheralsHTML += `<div class="detail-group">
+                        <label>Monitor:</label>
+                        <p>${equipment.monitorBrand || 'Sin marca'} ${equipment.monitorModel ? `- ${equipment.monitorModel}` : ''} ${equipment.monitorSize ? `(${equipment.monitorSize})` : ''}</p>
+                    </div>`;
+                }
+                
+                if (equipment.hasKeyboard) {
+                    peripheralsHTML += `<div class="detail-group">
+                        <label>Teclado:</label>
+                        <p>${equipment.keyboardBrand || 'Sin marca'} ${equipment.keyboardModel ? `- ${equipment.keyboardModel}` : ''} ${equipment.keyboardType ? `(${equipment.keyboardType})` : ''}</p>
+                    </div>`;
+                }
+                
+                if (equipment.hasMouse) {
+                    peripheralsHTML += `<div class="detail-group">
+                        <label>Mouse:</label>
+                        <p>${equipment.mouseBrand || 'Sin marca'} ${equipment.mouseModel ? `- ${equipment.mouseModel}` : ''} ${equipment.mouseType ? `(${equipment.mouseType})` : ''}</p>
+                    </div>`;
+                }
+                
+                if (equipment.hasSpeakers) {
+                    peripheralsHTML += `<div class="detail-group">
+                        <label>Parlantes:</label>
+                        <p>${equipment.speakersBrand || 'Sin marca'} ${equipment.speakersModel ? `- ${equipment.speakersModel}` : ''} ${equipment.speakersType ? `(${equipment.speakersType})` : ''}</p>
+                    </div>`;
+                }
+                
+                if (equipment.hasDVD) {
+                    peripheralsHTML += `<div class="detail-group">
+                        <label>Lector DVD:</label>
+                        <p>${equipment.dvdBrand || 'Sin marca'} ${equipment.dvdModel ? `- ${equipment.dvdModel}` : ''} ${equipment.dvdType ? `(${equipment.dvdType})` : ''}</p>
+                    </div>`;
+                }
+                
+                peripheralsHTML += `</div></div>`;
+            }
+            
+            // Detalles de inmuebles
+            let furnitureHTML = '';
+            
+            if (equipment.hasFurniture) {
+                furnitureHTML = `<div style="grid-column: 1 / -1;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">Información del Inmueble</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">`;
+                
+                if (equipment.furnitureCode) {
+                    furnitureHTML += `<div class="detail-group">
+                        <label>Código del Inmueble:</label>
+                        <p>${equipment.furnitureCode}</p>
+                    </div>`;
+                }
+                
+                if (equipment.furnitureType) {
+                    furnitureHTML += `<div class="detail-group">
+                        <label>Tipo de Inmueble:</label>
+                        <p>${equipment.furnitureType}</p>
+                    </div>`;
+                }
+                
+                if (equipment.furnitureMaterial) {
+                    furnitureHTML += `<div class="detail-group">
+                        <label>Material:</label>
+                        <p>${equipment.furnitureMaterial}</p>
+                    </div>`;
+                }
+                
+                if (equipment.furnitureColor) {
+                    furnitureHTML += `<div class="detail-group">
+                        <label>Color:</label>
+                        <p>${equipment.furnitureColor}</p>
+                    </div>`;
+                }
+                
+                if (equipment.furnitureDimensions) {
+                    furnitureHTML += `<div class="detail-group">
+                        <label>Dimensiones:</label>
+                        <p>${equipment.furnitureDimensions} cm</p>
+                    </div>`;
+                }
+                
+                if (equipment.furnitureCondition) {
+                    furnitureHTML += `<div class="detail-group">
+                        <label>Estado del Inmueble:</label>
+                        <p>${equipment.furnitureCondition}</p>
+                    </div>`;
+                }
+                
+                if (equipment.furnitureQuantity > 0) {
+                    furnitureHTML += `<div class="detail-group">
+                        <label>Cantidad:</label>
+                        <p>${equipment.furnitureQuantity}</p>
+                    </div>`;
+                }
+                
+                if (equipment.furnitureObservations) {
+                    furnitureHTML += `<div class="detail-group" style="grid-column: 1 / -1;">
+                        <label>Observaciones del Inmueble:</label>
+                        <p>${equipment.furnitureObservations}</p>
+                    </div>`;
+                }
+                
+                furnitureHTML += `</div></div>`;
+            }
+            
+            // Crear HTML con los detalles
+            modalDetails.innerHTML = `
+                <div>
+                    <div class="detail-group">
+                        <label>Código del Equipo:</label>
+                        <p>${equipment.code}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Nombre:</label>
+                        <p>${equipment.name}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Tipo:</label>
+                        <p>${equipment.type}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Marca del CPU:</label>
+                        <p>${equipment.brand}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Estado:</label>
+                        <p><span class="status-badge ${getStatusClass(equipment.status)}">${equipment.status}</span></p>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="detail-group">
+                        <label>Procesador:</label>
+                        <p>${equipment.processor || 'No especificado'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Memoria RAM:</label>
+                        <p>${ramDisplay}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Almacenamiento:</label>
+                        <p>${storageDisplay}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Sistema Operativo:</label>
+                        <p>${equipment.operatingSystem || 'No especificado'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Placa Madre:</label>
+                        <p>${equipment.motherboard || 'No especificada'}</p>
+                    </div>
+                </div>
+                
+                ${peripheralsHTML}
+                ${furnitureHTML}
+                
+                <div style="grid-column: 1 / -1;">
+                    <div class="detail-group">
+                        <label>Especificaciones Técnicas Adicionales:</label>
+                        <p>${equipment.specs || 'No especificadas'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Observaciones / Notas:</label>
+                        <p>${equipment.notes || 'No hay observaciones'}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Mostrar el modal
+            document.getElementById('equipmentModal').style.display = 'flex';
+            
+            // En dispositivos móviles, hacer scroll al modal
+            if (window.innerWidth <= 768) {
+                document.querySelector('.modal-content').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('equipmentModal').style.display = 'none';
+        }
+
+        // Editar equipo
+        function editEquipment(id) {
+            const equipment = inventory.find(item => item.id === id);
+            if (!equipment) return;
+            
+            // Llenar formulario con los datos del equipo
+            document.getElementById('equipmentId').value = equipment.id;
+            document.getElementById('equipmentCode').value = equipment.code;
+            document.getElementById('equipmentName').value = equipment.name;
+            document.getElementById('equipmentType').value = equipment.type;
+            document.getElementById('equipmentBrand').value = equipment.brand;
+            document.getElementById('equipmentStatus').value = equipment.status;
+            
+            // Características Técnicas
+            document.getElementById('processor').value = equipment.processor || '';
+            if (technicalOptions.processors.includes(equipment.processor)) {
+                document.getElementById('processor').value = equipment.processor;
+                document.getElementById('processorOther').style.display = 'none';
+            } else if (equipment.processor) {
+                document.getElementById('processor').value = 'Otro';
+                document.getElementById('processorCustom').value = equipment.processor;
+                document.getElementById('processorOther').style.display = 'block';
+            }
+            
+            // Seleccionar RAM
+            const ramValue = equipment.ram || 0;
+            const ramRadio = document.querySelector(`input[name="ram"][value="${ramValue}"]`);
+            if (ramRadio) {
+                ramRadio.checked = true;
+                updateOptionLabels('ramOptions', ramValue);
+            } else if (ramValue > 0) {
+                document.getElementById('ramCustom').value = ramValue;
+                updateOptionLabels('ramOptions', '');
+            }
+            
+            // Seleccionar almacenamiento
+            const storageValue = equipment.storage || 0;
+            const storageRadio = document.querySelector(`input[name="storage"][value="${storageValue}"]`);
+            if (storageRadio) {
+                storageRadio.checked = true;
+                updateOptionLabels('storageOptions', storageValue);
+            } else if (storageValue > 0) {
+                document.getElementById('storageCustom').value = storageValue;
+                updateOptionLabels('storageOptions', '');
+            }
+            
+            // Sistema operativo
+            document.getElementById('operatingSystem').value = equipment.operatingSystem || '';
+            if (technicalOptions.operatingSystems.includes(equipment.operatingSystem)) {
+                document.getElementById('operatingSystem').value = equipment.operatingSystem;
+                document.getElementById('osOther').style.display = 'none';
+            } else if (equipment.operatingSystem) {
+                document.getElementById('operatingSystem').value = 'Otro';
+                document.getElementById('osCustom').value = equipment.operatingSystem;
+                document.getElementById('osOther').style.display = 'block';
+            }
+            
+            // Placa madre
+            document.getElementById('motherboard').value = equipment.motherboard || '';
+            if (technicalOptions.motherboards.includes(equipment.motherboard)) {
+                document.getElementById('motherboard').value = equipment.motherboard;
+                document.getElementById('motherboardOther').style.display = 'none';
+            } else if (equipment.motherboard) {
+                document.getElementById('motherboard').value = 'Otro';
+                document.getElementById('motherboardCustom').value = equipment.motherboard;
+                document.getElementById('motherboardOther').style.display = 'block';
+            }
+            
+            // Información de Periféricos
+            document.getElementById('hasMonitor').checked = equipment.hasMonitor || false;
+            document.getElementById('monitorBrand').value = equipment.monitorBrand || '';
+            document.getElementById('monitorModel').value = equipment.monitorModel || '';
+            document.getElementById('monitorSize').value = equipment.monitorSize || '';
+            document.getElementById('monitorDetails').style.display = equipment.hasMonitor ? 'block' : 'none';
+            
+            document.getElementById('hasKeyboard').checked = equipment.hasKeyboard || false;
+            document.getElementById('keyboardBrand').value = equipment.keyboardBrand || '';
+            document.getElementById('keyboardModel').value = equipment.keyboardModel || '';
+            document.getElementById('keyboardType').value = equipment.keyboardType || '';
+            document.getElementById('keyboardDetails').style.display = equipment.hasKeyboard ? 'block' : 'none';
+            
+            document.getElementById('hasMouse').checked = equipment.hasMouse || false;
+            document.getElementById('mouseBrand').value = equipment.mouseBrand || '';
+            document.getElementById('mouseModel').value = equipment.mouseModel || '';
+            document.getElementById('mouseType').value = equipment.mouseType || '';
+            document.getElementById('mouseDetails').style.display = equipment.hasMouse ? 'block' : 'none';
+            
+            document.getElementById('hasSpeakers').checked = equipment.hasSpeakers || false;
+            if (document.getElementById('speakersBrand')) {
+                document.getElementById('speakersBrand').value = equipment.speakersBrand || '';
+                document.getElementById('speakersModel').value = equipment.speakersModel || '';
+                document.getElementById('speakersType').value = equipment.speakersType || '';
+                document.getElementById('speakersDetails').style.display = equipment.hasSpeakers ? 'block' : 'none';
+            }
+            
+            document.getElementById('hasDVD').checked = equipment.hasDVD || false;
+            if (document.getElementById('dvdBrand')) {
+                document.getElementById('dvdBrand').value = equipment.dvdBrand || '';
+                document.getElementById('dvdModel').value = equipment.dvdModel || '';
+                document.getElementById('dvdType').value = equipment.dvdType || '';
+                document.getElementById('dvdDetails').style.display = equipment.hasDVD ? 'block' : 'none';
+            }
+            
+            // Información de Inmuebles
+            document.getElementById('furnitureCode').value = equipment.furnitureCode || '';
+            document.getElementById('furnitureType').value = equipment.furnitureType || '';
+            document.getElementById('furnitureMaterial').value = equipment.furnitureMaterial || '';
+            document.getElementById('furnitureColor').value = equipment.furnitureColor || '';
+            document.getElementById('furnitureDimensions').value = equipment.furnitureDimensions || '';
+            document.getElementById('furnitureCondition').value = equipment.furnitureCondition || '';
+            
+            const quantityValue = equipment.furnitureQuantity || 1;
+            const quantityRadio = document.querySelector(`input[name="quantity"][value="${quantityValue}"]`);
+            if (quantityRadio) {
+                quantityRadio.checked = true;
+                updateOptionLabels('quantityOptions', quantityValue);
+            } else {
+                document.getElementById('furnitureQuantity').value = quantityValue;
+                updateOptionLabels('quantityOptions', '');
+            }
+            
+            document.getElementById('furnitureObservations').value = equipment.furnitureObservations || '';
+            
+            // Información Adicional
+            document.getElementById('equipmentSpecs').value = equipment.specs || '';
+            document.getElementById('equipmentNotes').value = equipment.notes || '';
+            
+            // Scroll al formulario
+            document.getElementById('equipmentCode').focus();
+            
+            // En dispositivos móviles, hacer scroll al formulario
+            if (window.innerWidth <= 768) {
+                document.getElementById('equipmentForm').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            showToast('Modo edición activado. Complete los cambios y guarde.', 'info');
+        }
+
+        // Eliminar equipo
+        function deleteEquipment(id) {
+            if (confirm('¿Está seguro de que desea eliminar este equipo del inventario?')) {
+                inventory = inventory.filter(item => item.id !== id);
+                localStorage.setItem('ueaInventory', JSON.stringify(inventory));
+                loadInventory();
+                showToast('Equipo eliminado correctamente del inventario.', 'success');
+            }
+        }
+
+        // Limpiar formulario
+        function clearForm() {
+            document.getElementById('equipmentId').value = '';
+            document.getElementById('equipmentForm').reset();
+            
+            // Ocultar detalles de periféricos
+            document.getElementById('monitorDetails').style.display = 'none';
+            document.getElementById('keyboardDetails').style.display = 'none';
+            document.getElementById('mouseDetails').style.display = 'none';
+            if (document.getElementById('speakersDetails')) {
+                document.getElementById('speakersDetails').style.display = 'none';
+            }
+            if (document.getElementById('dvdDetails')) {
+                document.getElementById('dvdDetails').style.display = 'none';
+            }
+            
+            // Ocultar campos "Otro"
+            document.getElementById('processorOther').style.display = 'none';
+            document.getElementById('osOther').style.display = 'none';
+            document.getElementById('motherboardOther').style.display = 'none';
+            
+            // Limpiar opciones personalizadas
+            document.getElementById('ramCustom').value = '';
+            document.getElementById('storageCustom').value = '';
+            document.getElementById('furnitureQuantity').value = '1';
+            
+            // Restablecer selección de opciones
+            updateOptionLabels('ramOptions', '');
+            updateOptionLabels('storageOptions', '');
+            updateOptionLabels('quantityOptions', '1');
+            
+            // Enfocar el primer campo
+            document.getElementById('equipmentCode').focus();
+            
+            showToast('Formulario limpiado correctamente.', 'info');
+        }
+
+        // Limpiar todo el inventario
+        function resetInventory() {
+            if (confirm('¿Está seguro de que desea eliminar TODOS los equipos del inventario? Esta acción no se puede deshacer.')) {
+                inventory = [];
+                localStorage.removeItem('ueaInventory');
+                loadInventory();
+                showToast('Todo el inventario ha sido eliminado.', 'success');
+            }
+        }
+
+        // Buscar equipo
+        function searchEquipment() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                loadInventory();
+                return;
+            }
+            
+            const filteredInventory = inventory.filter(item => 
+                item.code.toLowerCase().includes(searchTerm) ||
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.brand.toLowerCase().includes(searchTerm) ||
+                item.type.toLowerCase().includes(searchTerm) ||
+                item.processor.toLowerCase().includes(searchTerm) ||
+                (item.furnitureCode && item.furnitureCode.toLowerCase().includes(searchTerm)) ||
+                (item.furnitureType && item.furnitureType.toLowerCase().includes(searchTerm))
+            );
+            
+            const tableBody = document.getElementById('inventoryTableBody');
+            const emptyState = document.getElementById('emptyInventory');
+            
+            if (filteredInventory.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                emptyState.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <h3>No se encontraron equipos</h3>
+                    <p>No hay equipos que coincidan con "${searchTerm}"</p>
+                `;
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            tableBody.innerHTML = '';
+            
+            filteredInventory.forEach(equipment => {
+                const statusClass = getStatusClass(equipment.status);
+                const statusText = equipment.status;
+                
+                // Determinar estado de inmuebles
+                let furnitureStatus = 'Sin inmueble';
+                if (equipment.hasFurniture && equipment.furnitureType) {
+                    furnitureStatus = `${equipment.furnitureType}`;
+                    if (equipment.furnitureCode) {
+                        furnitureStatus += ` (${equipment.furnitureCode})`;
+                    }
+                }
+                
+                // Determinar estado de periféricos
+                let peripheralsStatus = 'Sin periféricos';
+                if (equipment.hasPeripherals) {
+                    let count = 0;
+                    if (equipment.hasMonitor) count++;
+                    if (equipment.hasKeyboard) count++;
+                    if (equipment.hasMouse) count++;
+                    if (equipment.hasSpeakers) count++;
+                    if (equipment.hasDVD) count++;
+                    peripheralsStatus = `${count} periféricos`;
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${equipment.code}</strong></td>
+                    <td>${equipment.name}</td>
+                    <td>${equipment.type}</td>
+                    <td>${equipment.brand}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${furnitureStatus}</td>
+                    <td>${peripheralsStatus}</td>
+                    <td class="actions-cell">
+                        <button class="action-btn view-btn" onclick="viewEquipmentDetails('${equipment.id}')" aria-label="Ver detalles">
+                            <i class="fas fa-eye"></i> <span class="action-text">Ver</span>
+                        </button>
+                        <button class="action-btn edit-btn" onclick="editEquipment('${equipment.id}')" aria-label="Editar equipo">
+                            <i class="fas fa-edit"></i> <span class="action-text">Editar</span>
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteEquipment('${equipment.id}')" aria-label="Eliminar equipo">
+                            <i class="fas fa-trash"></i> <span class="action-text">Eliminar</span>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            showToast(`Se encontraron ${filteredInventory.length} equipos.`, 'info');
+        }
+
+        // Limpiar búsqueda
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            loadInventory();
+        }
+
+        // ================================
+        // FUNCIONES PARA GENERAR REPORTES PDF
+        // ================================
+
+        // Generar reporte completo
+        function generateFullReport() {
+            if (inventory.length === 0) {
+                showToast('No hay equipos registrados para generar el reporte.', 'error');
+                return;
+            }
+            
+            generatePDFReport(inventory, 'Reporte Completo de Inventario', 'completo');
+        }
+
+        // Generar reporte por estado
+        function generateStatusReport() {
+            const status = document.getElementById('statusFilter').value;
+            const filtered = inventory.filter(item => item.status === status);
+            
+            if (filtered.length === 0) {
+                showToast(`No hay equipos con estado "${status}" para generar el reporte.`, 'error');
+                return;
+            }
+            
+            generatePDFReport(filtered, `Reporte de Equipos - ${status}`, `estado_${status.toLowerCase().replace(' ', '_')}`);
+        }
+
+        // Generar reporte de inmuebles
+        function generateFurnitureReport() {
+            const filtered = inventory.filter(item => item.hasFurniture === true);
+            
+            if (filtered.length === 0) {
+                showToast('No hay equipos con inmuebles registrados para generar el reporte.', 'error');
+                return;
+            }
+            
+            generatePDFReport(filtered, 'Reporte de Inmuebles Registrados', 'inmuebles');
+        }
+
+        // Generar reporte de periféricos
+        function generatePeripheralsReport() {
+            const filtered = inventory.filter(item => item.hasPeripherals === true);
+            
+            if (filtered.length === 0) {
+                showToast('No hay equipos con periféricos registrados para generar el reporte.', 'error');
+                return;
+            }
+            
+            generatePDFReport(filtered, 'Reporte de Equipos con Periféricos', 'perifericos');
+        }
+
+        // Función principal para generar PDF
+        function generatePDFReport(data, title, filename) {
+            showToast('Generando PDF, por favor espere...', 'info');
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+            
+            let currentY = 20;
+            
+            // Logo
+            try {
+                const logo = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQuNSAyQTMuNSAzLjUgMCAwMDEgNS41VjE1QTEuNSAxLjUgMCAwMDIuNSAxNkg0VjE5QTEgMSAwIDAwNSA2SDExQTEgMSAwIDAwMTIgMTlWMTZIMTguNUExLjUgMS41IDAgMDAyMCAxNC41VjUuNEEzLjUgMy41IDAgMDAxNi41IDJINDVaIiBmaWxsPSIjMWUzYzcyIi8+Cjwvc3ZnPg==";
+                doc.addImage(logo, 'PNG', 20, 15, 25, 25);
+            } catch(e) {
+                console.log("No se pudo cargar la imagen en el PDF");
+            }
+            
+            // Encabezado
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text('UNIDAD EDUCATIVA ANTOFAGASTA', pageWidth / 2, currentY, { align: 'center' });
+            
+            currentY += 8;
+            doc.setFontSize(14);
+            doc.text('Carrera de Sistemas Informáticos', pageWidth / 2, currentY, { align: 'center' });
+            
+            currentY += 10;
+            doc.setFontSize(16);
+            doc.setTextColor(30, 60, 114);
+            doc.text(title, pageWidth / 2, currentY, { align: 'center' });
+            
+            currentY += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            
+            // Fecha de generación
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('es-ES', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            doc.text(`Generado el: ${dateStr}`, pageWidth / 2, currentY, { align: 'center' });
+            
+            currentY += 5;
+            doc.text(`Total de equipos: ${data.length}`, pageWidth / 2, currentY, { align: 'center' });
+            
+            currentY += 15;
+            
+            // Tabla de resumen
+            const tableHeaders = [
+                ['Código', 'Equipo', 'Tipo', 'Marca', 'Estado', 'Inmueble', 'Periféricos']
+            ];
+            
+            const tableData = data.map(item => {
+                // Estado de inmuebles
+                let furnitureStatus = 'Sin inmueble';
+                if (item.hasFurniture && item.furnitureType) {
+                    furnitureStatus = `${item.furnitureType}`;
+                }
+                
+                // Estado de periféricos
+                let peripheralsStatus = 'Sin periféricos';
+                if (item.hasPeripherals) {
+                    let count = 0;
+                    if (item.hasMonitor) count++;
+                    if (item.hasKeyboard) count++;
+                    if (item.hasMouse) count++;
+                    if (item.hasSpeakers) count++;
+                    if (item.hasDVD) count++;
+                    peripheralsStatus = `${count} periféricos`;
+                }
+                
+                return [
+                    item.code,
+                    item.name,
+                    item.type,
+                    item.brand,
+                    item.status,
+                    furnitureStatus,
+                    peripheralsStatus
+                ];
+            });
+            
+            doc.autoTable({
+                head: tableHeaders,
+                body: tableData,
+                startY: currentY,
+                headStyles: { 
+                    fillColor: [30, 60, 114],
+                    textColor: [255, 255, 255],
+                    fontSize: 10
+                },
+                bodyStyles: { fontSize: 9 },
+                alternateRowStyles: { fillColor: [245, 245, 245] },
+                margin: { left: 10, right: 10 },
+                styles: { overflow: 'linebreak', cellWidth: 'wrap' },
+                columnStyles: {
+                    0: { cellWidth: 22 },
+                    1: { cellWidth: 30 },
+                    2: { cellWidth: 25 },
+                    3: { cellWidth: 20 },
+                    4: { cellWidth: 22 },
+                    5: { cellWidth: 20 },
+                    6: { cellWidth: 22 }
+                }
+            });
+            
+            // Pie de página
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text(
+                    `Página ${i} de ${pageCount} - Sistema de Inventario UEA - Carrera de Sistemas Informáticos`,
+                    pageWidth / 2,
+                    pageHeight - 10,
+                    { align: 'center' }
+                );
+            }
+            
+            // Guardar PDF
+            const date = today.toISOString().split('T')[0];
+            doc.save(`inventario_uea_${filename}_${date}.pdf`);
+            
+            showToast('PDF generado correctamente.', 'success');
+        }
+
+        // Manejar clics fuera del modal para cerrarlo
+        window.onclick = function(event) {
+            const modal = document.getElementById('equipmentModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Manejar tecla ESC para cerrar modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
